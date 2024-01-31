@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { Formik } from 'formik'
 import Login from '../../components/Login'
-import NavBar from '../../components/NavBar'
+import NavBar from '../../components/navbar'
 
 function LoginPage({ title }) {
   const router = useRouter()

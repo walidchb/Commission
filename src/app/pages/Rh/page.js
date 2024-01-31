@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation'
 import Select from 'react-select'
 import { format, compareAsc, differenceInMonths } from 'date-fns'
 
-import NavBar from '../../components/navBar'
+import NavBar from '../../components/navbar'
 import { useFormik } from 'formik'
 
 const isValidEmail = email => {

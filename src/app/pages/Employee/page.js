@@ -7,7 +7,7 @@ import { signOut, useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import Select from 'react-select'
 
-import NavBar from '../../components/NavBar'
+import NavBar from '../../components/navbar'
 import { useFormik } from 'formik'
 const { isSameMonth } = require('date-fns')
 function Employee() {

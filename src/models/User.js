@@ -27,10 +27,17 @@ const userSchema = new Schema(
     password: {
       type: String,
       unique: false,
+      required: true
+    },
+    salaire: {
+      type: Number,
 
-      required: false
-    }
+      unique: false,
+      required: true
+    },
+    createdAt: { type: Date, default: Date.now }
   },
+
   { timestamps: true }
 )
 

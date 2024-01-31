@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import Logo from './components/logo'
 import { useDispatch, useSelector } from 'react-redux'
 
-function NavBar({ title, userName, userType }) {
+function NavBar({ title, userName, userType, display }) {
   const router = useRouter()
 
   const { data: session } = useSession()
@@ -19,6 +19,35 @@ function NavBar({ title, userName, userType }) {
         ' rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 0px 16px 0px'
     }
   }
+  const [refresh, setRefresh] = useState(false)
+  const [user, setUser] = useState({})
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/users?email=${session?.user?.email}`,
+          {
+            method: 'GET'
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch data')
+        }
+
+        const data = await response.json()
+        console.log('nav bar ')
+        console.log(data.message)
+
+        setUser(data.message)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <div style={styles.container} className=' overflow-visible  bg-white '>
@@ -29,15 +58,18 @@ function NavBar({ title, userName, userType }) {
         <div className=' cursor-pointer '>
           <Logo textColor='white' />
         </div>
-        <h1 className='text-center text-4xl text-black'>{title}</h1>
-        {session ? (
+        <h1 className='text-center text-4xl text-black'>
+          {user?.posteTrav == 'Ceo' ? 'Admin' : title}
+        </h1>
+
+        {session && display ? (
           <div>
             <div className='dropdown'>
               <button className='dropbtn '>
-                Hello, Walid <span>&#x22BD;</span>
+                Hello, {user?.prenom} <span>&#x22BD;</span>
               </button>
               <div className='dropdown-content'>
-                <p>Poste : developer</p>
+                <p>Poste : {user?.posteTrav}</p>
                 <p
                   className=' cursor-pointer '
                   onClick={() => {

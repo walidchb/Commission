@@ -15,7 +15,8 @@ export const POST = async request => {
 
   const newService = new Service({
     nom,
-    commission
+    commission,
+    createdAt: new Date()
   })
 
   try {

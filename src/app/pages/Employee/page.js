@@ -1,5 +1,5 @@
 'use client'
-
+import { format, compareAsc, differenceInMonths } from 'date-fns'
 import React, { useEffect, useState } from 'react'
 import './styles.css'
 import { useRouter } from 'next/navigation'
@@ -9,7 +9,7 @@ import Select from 'react-select'
 
 import NavBar from '../../components/NavBar'
 import { useFormik } from 'formik'
-
+const { isSameMonth } = require('date-fns')
 function Employee() {
   const router = useRouter()
   const { data: session } = useSession()
@@ -21,55 +21,56 @@ function Employee() {
   const [showModal, setShowModal] = React.useState(false)
 
   const [commission, setCommission] = useState([])
+  const [tousCommission, setTousCommission] = useState([])
 
   const months = [
     {
       label: 'January',
-      number: 1
+      number: '1'
     },
     {
       label: 'February',
-      number: 2
+      number: '2'
     },
     {
       label: 'March',
-      number: 3
+      number: '3'
     },
     {
       label: 'April',
-      number: 4
+      number: '4'
     },
     {
       label: 'May',
-      number: 5
+      number: '5'
     },
     {
       label: 'June',
-      number: 6
+      number: '6'
     },
     {
       label: 'July',
-      number: 7
+      number: '7'
     },
     {
       label: 'August',
-      number: 8
+      number: '8'
     },
     {
       label: 'September',
-      number: 9
+      number: '9'
     },
     {
       label: 'October',
-      number: 10
+      number: '10'
     },
     {
       label: 'November',
-      number: 11
+      number: '11'
     },
     {
       label: 'December',
-      number: 12
+      number: '12'
     }
   ]
 
@@ -82,6 +83,25 @@ function Employee() {
     // Utiliser la méthode reduce pour calculer la somme de l'attribut
     return tableau.reduce((somme, objet) => somme + objet[attribut], 0)
   }
+
+  function sommePoints(tableau) {
+    // Vérifier si le tableau est vide
+    if (tableau.length === 0) {
+      return 0
+    }
+    let points = 0
+    tableau.forEach(element => {
+      if (element.servicePrix >= 3000) {
+        points++
+      }
+    })
+
+    // Utiliser la méthode reduce pour calculer la somme de l'attribut
+    return points
+  }
+  function commissionPoints(tableau) {
+    return sommePoints(tableau) >= 10 ? 5000 : 0
+  }
   const formik = useFormik({
     initialValues: {
       service: {},
@@ -92,16 +112,6 @@ function Employee() {
 
     onSubmit: async values => {
       try {
-        // alert(
-        //   JSON.stringify({
-        //     serviceNom: values.service.label,
-        //     servicePrix: values.service.value,
-        //     nom: values.nom,
-        //     prenom: values.prenom,
-        //     numeroTel: values.numeroTel,
-        //     userId: elements[0]._id
-        //   })
-        // )
         const res = await fetch('/api/commission', {
           method: 'POST',
           headers: {
@@ -138,7 +148,7 @@ function Employee() {
     const fetchData = async () => {
       try {
         console.log('1')
-        const response = await fetch(`/api/users?email:${session.user.email}`, {
+        const response = await fetch(`/api/users?email=${session.user.email}`, {
           method: 'GET'
         })
 
@@ -163,7 +173,8 @@ function Employee() {
   }, [refresh])
 
   const [services, setServices] = useState([])
-
+  const [month, setMonth] = useState({})
+  // console.log('moth' + month)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -188,6 +199,14 @@ function Employee() {
   }, [refresh])
 
   useEffect(() => {
+    const month = new Date().getMonth() + 1
+    setMonth({
+      label: months[month - 1].label,
+      number: month.toString()
+    })
+  }, [])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
@@ -204,14 +223,47 @@ function Employee() {
         }
 
         const data = await response.json()
-        setCommission(data.message)
+        // console.log
+        setTousCommission(data.message)
+        // console.log(filterArrayByMonth(data.message, 1))
+        // setCommission(data.message)
+        setCommission(filterArrayByMonth(data.message, month.number))
       } catch (error) {
         console.log(error)
       }
     }
 
     fetchData()
-  }, [refresh])
+  }, [refresh, month])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/commission?email=${session.user.email}`,
+          {
+            method: 'GET'
+          }
+        )
+
+        if (!response.ok) {
+          console.log(response)
+
+          throw new Error('Failed to fetch data')
+        }
+
+        const data = await response.json()
+        // console.log
+        setTousCommission(data.message)
+        // console.log(filterArrayByMonth(data.message, 1))
+        // setCommission(data.message)
+        setCommission(filterArrayByMonth(data.message, month.number))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchData()
+  }, [])
   function transformArray(originalArray) {
     return originalArray.map(obj => {
       return {
@@ -221,30 +273,63 @@ function Employee() {
     })
   }
 
+  function filterArrayByMonth(array, targetMonth) {
+    return array.filter(item => {
+      return format(item.createdAt, 'M').toString() === targetMonth
+    })
+  }
+
+  function hasAtrip(commissions) {
+    let comHasPoits = []
+
+    commissions.forEach(element => {
+      if (element.servicePrix >= 3000) {
+        comHasPoits.push(element)
+      }
+    })
+    commissions.sort(function (a, b) {
+      return new Date(a.createdAt) - new Date(b.createdAt)
+    })
+
+    if (
+      differenceInMonths(
+        commissions[59]?.createdAt,
+        commissions[0]?.createdAt
+      ) <= 6
+    ) {
+      return true
+    } else {
+      return false
+    }
+  }
   return (
     <div className='min-h-screen bg-white text-black'>
-      <NavBar userName={'walid'} userType={1} title={'Employee'} />
+      <NavBar
+        display={true}
+        userName={'walid'}
+        userType={1}
+        title={'Employee'}
+      />
 
       <div className='mt-16 flex w-full flex-col items-center justify-center'>
         <div
           style={{ width: '75vw' }}
-          className='  flex items-center justify-between px-10 '
+          className='  flex items-center justify-center px-10 '
         >
-          <h1 className='text-xl text-black'>
-            Le total de mes Commission dans ce mois :{' '}
-            <span className='text-green-600'>
-              {sommeAttribut(commission, 'servicePrix')} DA
-            </span>
-          </h1>
-
           <div>
             <div className='dropdownE'>
               <button className='dropbtnE '>
-                janvier <span>&#x22BD;</span>
+                {month.label} <span>&#x22BD;</span>
               </button>
               <div className='dropdown-contentE'>
                 {months.map(month => (
-                  <a href='#'>{month.label}</a>
+                  <p
+                    onClick={() => setMonth(month)}
+                    className=' cursor-pointer'
+                  >
+                    {month.label}
+                  </p>
+                  // <a href='#'>{month.label}</a>
                 ))}
               </div>
             </div>
@@ -260,12 +345,12 @@ function Employee() {
         </div>
 
         <div className='  flex items-center justify-center '>
-          <div className=' relative  mb-16 overflow-x-auto shadow-md sm:rounded-lg'>
+          <div className=' relative  mb-8 overflow-x-auto shadow-md sm:rounded-lg'>
             <table className=' text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
-                    Nombre
+                    Date
                   </th>
                   <th scope='col' className='px-6 py-3'>
                     Service
@@ -291,7 +376,7 @@ function Employee() {
                       scope='row'
                       className='whitespace-nowrap whitespace-nowrap px-6 py-4 font-medium font-medium text-gray-900 text-gray-900 dark:text-white dark:text-white'
                     >
-                      {index + 1}
+                      {format(ele.createdAt, 'yyyy-MM-dd HH:mm')}
                     </td>
                     <td className='whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white'>
                       {ele.serviceNom}
@@ -348,6 +433,47 @@ function Employee() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div
+          style={{ width: '75vw' }}
+          className='  flex flex-col items-center justify-center px-10 '
+        >
+          <div className='mb-8 flex  w-full  items-center justify-between px-10 '>
+            <h1 className='text-xl text-black'>
+              Le salaire de ce mois :{' '}
+              <span className='text-green-600'>{elements?.salaire} DA</span>
+            </h1>
+            <h1 className='text-xl text-black'>
+              Le total de mes Commission dans ce mois :{' '}
+              <span className='text-green-600'>
+                {sommeAttribut(commission, 'servicePrix')} DA
+              </span>
+            </h1>
+          </div>
+          <div className='flex  w-full  items-center justify-between px-10 '>
+            <h1 className='text-xl text-black'>
+              Le nombre de points de ce mois :{' '}
+              <span className='text-green-600'>
+                ({sommePoints(commission)}) - {commissionPoints(commission)} DA
+              </span>
+            </h1>
+            <h1 className='rounded-md border bg-violet-200 p-4 text-xl text-black shadow-lg'>
+              Le total de ce mois :{' '}
+              <span className='text-green-600'>
+                {sommeAttribut(commission, 'servicePrix') +
+                  elements?.salaire +
+                  commissionPoints(commission)}{' '}
+                DA
+              </span>
+            </h1>
+          </div>
+          {hasAtrip(tousCommission) ? (
+            <div class='my-8 w-full rounded-lg bg-blue-500 p-6 text-center text-white shadow-lg'>
+              <h2 class='mb-4 text-2xl font-bold'>Congratulations!</h2>
+              <p class='text-lg'>You won a trip to Turkey</p>
+            </div>
+          ) : null}
         </div>
       </div>
 

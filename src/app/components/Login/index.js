@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 function Login({ title, userType }) {
   const router = useRouter()
   const { data: session, status: sessionStatus } = useSession()
-
+  const [error, setErrorCred] = useState('')
   useEffect(() => {
     console.log('session')
 
@@ -30,6 +30,8 @@ function Login({ title, userType }) {
         if (userType == 1 && sessionStatus === 'authenticated') {
           router.replace(`/pages/Employee`)
         } else if (userType == 2 && sessionStatus === 'authenticated') {
+          router.replace(`/pages/Rh`)
+        } else {
           router.replace(`/pages/Rh`)
         }
       } catch (error) {
@@ -73,8 +75,7 @@ function Login({ title, userType }) {
               })
 
               if (res?.error) {
-                console.log(res?.error)
-                // setError('Invalid email or password')
+                setErrorCred('Invalid email or password')
                 if (res?.url) router.replace('/')
               } else {
                 console.log(res)
@@ -144,6 +145,7 @@ function Login({ title, userType }) {
               >
                 Login
               </button>
+              <p className=' mb-4 text-red-500'> {error}</p>
             </form>
           )}
         </Formik>

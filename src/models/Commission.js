@@ -29,7 +29,8 @@ const commissionSchema = new Schema(
     userEmail: {
       type: String,
       unique: false
-    }
+    },
+    createdAt: { type: Date, default: Date.now }
   },
   { timestamps: true }
 )

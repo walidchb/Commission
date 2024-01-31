@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { redirect } from 'next/navigation'
 import Select from 'react-select'
+import { format, compareAsc, differenceInMonths } from 'date-fns'
 
 import NavBar from '../../components/navBar'
 import { useFormik } from 'formik'
@@ -24,11 +25,49 @@ function isValidNumber(value) {
 function Rh() {
   const { data: session } = useSession()
   console.log(session)
+
   if (!session) {
     redirect('/')
   }
+  useEffect(() => {
+    const month = new Date().getMonth() + 1
+    setMonth({
+      label: months[month - 1].label,
+      number: month.toString()
+    })
+  }, [])
   const [showModal, setShowModal] = React.useState(false)
   const [refresh, setRefresh] = useState(false)
+  const [user, setUser] = useState({})
+  const [month, setMonth] = useState({})
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log('1')
+        const response = await fetch(`/api/users?email=${session.user.email}`, {
+          method: 'GET'
+        })
+
+        if (!response.ok) {
+          console.log(response)
+
+          throw new Error('Failed to fetch data')
+        }
+        console.log('3')
+
+        const data = await response.json()
+        console.log(data)
+        setUser(data.message)
+      } catch (error) {
+        console.log('4')
+
+        setError(error)
+      }
+    }
+
+    fetchData()
+  }, [refresh])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,6 +119,7 @@ function Rh() {
   const [showModalEmployees, setShowModalEmployees] = React.useState(false)
   const [showModalCommissions, setShowModalCommissions] = React.useState(false)
   const [commissions, setCommission] = useState([])
+  const [tousCommission, setTousCommission] = useState([])
   function sommeAttribut(tableau, attribut) {
     // Vérifier si le tableau est vide
     if (tableau.length === 0) {
@@ -107,14 +147,49 @@ function Rh() {
       console.log(error)
     }
   }
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          `/api/commission?email=${session.user.email}`,
+          {
+            method: 'GET'
+          }
+        )
 
+        if (!response.ok) {
+          console.log(response)
+
+          throw new Error('Failed to fetch data')
+        }
+
+        const data = await response.json()
+        // console.log
+        setTousCommission(data.message)
+        // console.log(filterArrayByMonth(data.message, 1))
+        // setCommission(data.message)
+        setCommission(filterArrayByMonth(data.message, month.number))
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    fetchData()
+  }, [refresh, month])
   const [users, setUsers] = useState([])
   const [services, setServices] = useState([])
 
   const postesTrav = [
-    { value: 'option1', label: 'Option 1' },
-    { value: 'option2', label: 'Option 2' },
-    { value: 'option3', label: 'Option 3' }
+    { label: 'Ceo', value: 'Ceo' },
+    { label: 'Developer', value: 'Developer' },
+    {
+      label: 'Human Resources Specialist',
+      value: 'Human Resources Specialist'
+    },
+    { label: 'Photographer', value: 'Photographer' },
+    { label: 'Editor', value: 'Editor' },
+    { label: 'Designer', value: 'Designer' }
+    // Add more job posts as needed
   ]
   const months = [
     {
@@ -172,6 +247,7 @@ function Rh() {
       posteTrav: '',
       nom: '',
       prenom: '',
+      salaire: '',
       email: '',
       password: ''
     },
@@ -206,6 +282,7 @@ function Rh() {
             posteTrav: values.posteTrav.label,
             nom: values.nom,
             prenom: values.prenom,
+            salaire: values.salaire,
             email: values.email,
             password: values.password
           })
@@ -267,9 +344,76 @@ function Rh() {
       // alert(JSON.stringify(values, null, 2))
     }
   })
+
+  function transformArray(originalArray) {
+    return originalArray.map(obj => {
+      return {
+        label: obj.nom,
+        value: obj.commission
+      }
+    })
+  }
+
+  function filterArrayByMonth(array, targetMonth) {
+    return array.filter(item => {
+      return format(item.createdAt, 'M').toString() === targetMonth
+    })
+  }
+
+  function hasAtrip(commissions) {
+    let comHasPoits = []
+
+    commissions.forEach(element => {
+      if (element.servicePrix >= 3000) {
+        comHasPoits.push(element)
+      }
+    })
+    commissions.sort(function (a, b) {
+      return new Date(a.createdAt) - new Date(b.createdAt)
+    })
+
+    if (
+      differenceInMonths(
+        commissions[59]?.createdAt,
+        commissions[0]?.createdAt
+      ) <= 6
+    ) {
+      return true
+    } else {
+      return false
+    }
+  }
+  function sommeAttribut(tableau, attribut) {
+    // Vérifier si le tableau est vide
+    if (tableau.length === 0) {
+      return 0
+    }
+
+    // Utiliser la méthode reduce pour calculer la somme de l'attribut
+    return tableau.reduce((somme, objet) => somme + objet[attribut], 0)
+  }
+
+  function sommePoints(tableau) {
+    // Vérifier si le tableau est vide
+    if (tableau.length === 0) {
+      return 0
+    }
+    let points = 0
+    tableau.forEach(element => {
+      if (element.servicePrix >= 3000) {
+        points++
+      }
+    })
+
+    // Utiliser la méthode reduce pour calculer la somme de l'attribut
+    return points
+  }
+  function commissionPoints(tableau) {
+    return sommePoints(tableau) >= 10 ? 5000 : 0
+  }
   return (
     <div className='min-h-screen bg-white text-black'>
-      <NavBar userName={'walid'} title={'Recources Humaine'} />
+      <NavBar display={true} userName={'walid'} title={'Recources Humaine'} />
 
       <div className='mt-16 flex w-full flex-col items-center justify-center'>
         <div
@@ -386,14 +530,16 @@ function Rh() {
           >
             Add Service
           </button>
-          <button
-            className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 px-4 py-2 font-bold text-white hover:border-violet-500 hover:bg-violet-400'
-            type='submit'
-            onClick={() => setShowModalEmployees(true)}
-            // disabled={isSubmitting}
-          >
-            Add Employee{' '}
-          </button>
+          {user?.posteTrav == 'Ceo' ? (
+            <button
+              className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 px-4 py-2 font-bold text-white hover:border-violet-500 hover:bg-violet-400'
+              type='submit'
+              onClick={() => setShowModalEmployees(true)}
+              // disabled={isSubmitting}
+            >
+              Add Employee{' '}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -600,6 +746,16 @@ function Rh() {
                       />
                     </div>
                     <div className='w-full'>
+                      <p className='text-xl'>Salaire :</p>
+                      <input
+                        className='input mb-2 h-8 w-full rounded-2xl px-4'
+                        type='number'
+                        name='salaire'
+                        onChange={formik.handleChange}
+                        value={formik.values.salaire}
+                      />
+                    </div>
+                    <div className='w-full'>
                       <p className='text-xl'>email :</p>
                       <input
                         className='input mb-2 h-8 w-full rounded-2xl px-4 '
@@ -663,33 +819,39 @@ function Rh() {
               <div className='relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none'>
                 {/*header*/}
                 <div className='border-blueGray-200 flex items-start justify-center rounded-t border-b border-solid p-5'>
-                  <h3 className='text-3xl font-semibold'>
-                    Commissions de walid chebbab
-                  </h3>
+                  <h3 className='text-3xl font-semibold'>Commissions</h3>
                 </div>
                 {/*body*/}
                 <div
                   style={{ padding: 12, height: '50vh', overflowY: 'scroll' }}
                 >
-                  {/* <div className='dropdownE pb-4'>
-                    <button className='dropbtnE '>
-                      janvier <span>&#x22BD;</span>
-                    </button>
-                    <div className='dropdown-contentE'>
-                      {months.map(month, index => (
-                        <a href='#' key={index}>
-                          {month.label}
-                        </a>
-                      ))}
+                  <div className='mb-4  flex items-center justify-center px-10 '>
+                    <div>
+                      <div className='dropdownE'>
+                        <button className='dropbtnE '>
+                          {month.label} <span>&#x22BD;</span>
+                        </button>
+                        <div className='dropdown-contentE'>
+                          {months.map(month => (
+                            <p
+                              onClick={() => setMonth(month)}
+                              className=' cursor-pointer'
+                            >
+                              {month.label}
+                            </p>
+                            // <a href='#'>{month.label}</a>
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                  </div> */}
+                  </div>
                   <div className='  flex items-center justify-center '>
                     <div className=' relative   overflow-x-auto shadow-md sm:rounded-lg'>
                       <table className=' text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
                         <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                           <tr>
                             <th scope='col' className='px-6 py-3'>
-                              Nombre
+                              Date
                             </th>
                             <th scope='col' className='px-6 py-3'>
                               Service
@@ -715,7 +877,7 @@ function Rh() {
                                 scope='row'
                                 className='whitespace-nowrap whitespace-nowrap px-6 py-4 font-medium font-medium text-gray-900 text-gray-900 dark:text-white dark:text-white'
                               >
-                                {index + 1}
+                                {format(ele.createdAt, 'yyyy-MM-dd HH:mm')}
                               </td>
                               <td className='whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white'>
                                 {ele.serviceNom}
@@ -740,11 +902,51 @@ function Rh() {
                       </table>
                     </div>
                   </div>
+                  <div className='mt-4  flex w-full flex-col items-center justify-around '>
+                    <div className='mb-8 flex  w-full  items-center justify-between  '>
+                      <h3 className='text-l text-black'>
+                        Le salaire de ce mois :{' '}
+                        <span className='text-green-600'>
+                          {user?.salaire} DA
+                        </span>
+                      </h3>
+                      <h3 className='text-l text-black'>
+                        Le total de mes Commission dans ce mois :{' '}
+                        <span className='text-green-600'>
+                          {sommeAttribut(commissions, 'servicePrix')} DA
+                        </span>
+                      </h3>
+                    </div>
+                    <div className='flex  w-full  items-center justify-between  '>
+                      <h3 className='text-l text-black'>
+                        Le nombre de points de ce mois :{' '}
+                        <span className='text-green-600'>
+                          ({sommePoints(commissions)}) -{' '}
+                          {commissionPoints(commissions)} DA
+                        </span>
+                      </h3>
+                    </div>
+                    {hasAtrip(tousCommission) ? (
+                      <div class='my-8 w-full rounded-lg bg-blue-500 p-6 text-center text-white shadow-lg'>
+                        <h2 class='mb-4 text-2xl font-bold'>
+                          Congratulations!
+                        </h2>
+                        <p class='text-lg'>You won a trip to Turkey</p>
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
                 {/*footer*/}
                 <div className='border-blueGray-200 flex items-center justify-between rounded-b border-t border-solid p-6'>
-                  total de Commissions :{' '}
-                  {sommeAttribut(commissions, 'servicePrix')} DA
+                  <h3 className='text-l rounded-md border bg-violet-200 p-4 text-black shadow-lg'>
+                    Le total de ce mois :{' '}
+                    <span className='text-green-600'>
+                      {sommeAttribut(commissions, 'servicePrix') +
+                        user?.salaire +
+                        commissionPoints(commissions)}{' '}
+                      DA
+                    </span>
+                  </h3>{' '}
                   <button
                     className='background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
                     type='button'

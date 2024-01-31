@@ -31,8 +31,12 @@ export const authOptions = {
               user.password
             )
             if (
-              (credentials.userType == 2 && user.posteTrav == 'Option 1') ||
-              (credentials.userType == 1 && user.posteTrav != 'Option 1')
+              (credentials.userType == 2 &&
+                user.posteTrav == 'Human Resources Specialist') ||
+              (credentials.userType == 1 &&
+                user.posteTrav != 'Human Resources Specialist' &&
+                user.posteTrav != 'Ceo') ||
+              (credentials.userType == 3 && user.posteTrav == 'Ceo')
             ) {
               if (isPasswordCorrect) {
                 return user

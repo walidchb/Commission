@@ -20,7 +20,8 @@ export const POST = async request => {
     nomClient,
     prenomClient,
     numTelClient,
-    userEmail
+    userEmail,
+    createdAt: new Date()
   })
 
   try {

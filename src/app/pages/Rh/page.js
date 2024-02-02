@@ -449,7 +449,7 @@ function Rh() {
     let comHasPoits = []
 
     commissions?.forEach(element => {
-      if (element.servicePrix >= 3000) {
+      if (element.servicePrix >= 4000) {
         comHasPoits.push(element)
       }
     })
@@ -485,7 +485,7 @@ function Rh() {
     }
     let points = 0
     tableau.forEach(element => {
-      if (element.servicePrix >= 3000) {
+      if (element.servicePrix >= 4000) {
         points++
       }
     })

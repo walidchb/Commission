@@ -91,7 +91,7 @@ function Employee() {
     }
     let points = 0
     tableau?.forEach(element => {
-      if (element.servicePrix >= 3000) {
+      if (element.servicePrix >= 4000) {
         points++
       }
     })

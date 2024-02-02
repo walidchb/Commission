@@ -2,20 +2,35 @@ import mongoose from 'mongoose'
 require('dotenv').config()
 
 const connect = async () => {
-  let retries = 5
-  while (retries) {
-    try {
-      await mongoose.connect(process.env.MONGO_URI, {})
-      console.log('MongoDB connected')
-      break
-    } catch (error) {
-      console.error('Error connecting to MongoDB:', error.message)
-      retries -= 1
-      console.log(`Retrying connection... ${retries} retries left.`)
-      await new Promise(res => setTimeout(res, 5000)) // 5 seconds delay
-    }
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      // useNewUrlParser: true,
+      // useUnifiedTopology: true
+    })
+    console.log('db connected')
+  } catch (err) {
+    console.error('Error connecting to database:', err)
+    // process.exit(1)
   }
 }
+module.exports = connect
+
+// const connect = async () => {
+//   let retries = 5
+//   // while (retries) {
+//   try {
+//     console.log(process.env.MONGO_URI)
+//     await mongoose.connect(process.env.MONGO_URI, {})
+//     console.log('MongoDB connected')
+//     // break
+//   } catch (error) {
+//     console.error('Error connecting to MongoDB:', error.message)
+//     // retries -= 1
+//     // console.log(`Retrying connection... ${retries} retries left.`)
+//     // await new Promise(res => setTimeout(res, 5000)) // 5 seconds delay
+//   }
+//   // }
+// }
 
 // const connect = async () => {
 //   if (mongoose.connections[0].readyState) return

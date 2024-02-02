@@ -20,7 +20,7 @@ export default function Home() {
       const fetchData = async () => {
         try {
           const response = await fetch(
-            `/api/users?email=${session.user.email}`,
+            `https://commissions-silamarketingagency.vercel.app/api/users?email=${session.user.email}`,
             {
               method: 'GET'
             }
@@ -52,7 +52,7 @@ export default function Home() {
           console.log(error)
         }
       }
-
+      console.log('object')
       fetchData()
     }
   }

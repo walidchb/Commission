@@ -14,7 +14,7 @@ function Employee() {
   const router = useRouter()
   const { data: session } = useSession()
 
-  console.log(session)
+  // console.log(session)
   if (!session) {
     redirect('/')
   }
@@ -76,21 +76,21 @@ function Employee() {
 
   function sommeAttribut(tableau, attribut) {
     // Vérifier si le tableau est vide
-    if (tableau.length === 0) {
+    if (tableau?.length === 0) {
       return 0
     }
 
     // Utiliser la méthode reduce pour calculer la somme de l'attribut
-    return tableau.reduce((somme, objet) => somme + objet[attribut], 0)
+    return tableau?.reduce((somme, objet) => somme + objet[attribut], 0)
   }
 
   function sommePoints(tableau) {
     // Vérifier si le tableau est vide
-    if (tableau.length === 0) {
+    if (tableau?.length === 0) {
       return 0
     }
     let points = 0
-    tableau.forEach(element => {
+    tableau?.forEach(element => {
       if (element.servicePrix >= 3000) {
         points++
       }
@@ -112,20 +112,23 @@ function Employee() {
 
     onSubmit: async values => {
       try {
-        const res = await fetch('/api/commission', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            serviceNom: values.service.label,
-            servicePrix: values.service.value,
-            nomClient: values.nom,
-            prenomClient: values.prenom,
-            numTelClient: values.numeroTel,
-            userEmail: session?.user?.email
-          })
-        })
+        const res = await fetch(
+          'https://commissions-silamarketingagency.vercel.app/api/commission',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              serviceNom: values.service.label,
+              servicePrix: values.service.value,
+              nomClient: values.nom,
+              prenomClient: values.prenom,
+              numTelClient: values.numeroTel,
+              userEmail: session?.user?.email
+            })
+          }
+        )
         if (res.status === 400) {
           console.log('This commission is already exist')
         }
@@ -141,16 +144,21 @@ function Employee() {
     }
   })
   const [refresh, setRefresh] = useState(false)
-  const [elements, setElements] = useState([])
+  const [paye, setPaye] = useState(false)
+
+  const [elements, setElements] = useState({})
   const [error, setError] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         console.log('1')
-        const response = await fetch(`/api/users?email=${session.user.email}`, {
-          method: 'GET'
-        })
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/users?email=${session.user.email}`,
+          {
+            method: 'GET'
+          }
+        )
 
         if (!response.ok) {
           console.log(response)
@@ -160,7 +168,41 @@ function Employee() {
         console.log('3')
 
         const data = await response.json()
-        console.log(data)
+        console.log('userrrrrrrrrrrrrr')
+
+        console.log(data.message)
+        setElements(data.message)
+      } catch (error) {
+        console.log('4')
+
+        setError(error)
+      }
+    }
+
+    fetchData()
+  }, [])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        console.log('1')
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/users?email=${session.user.email}`,
+          {
+            method: 'GET'
+          }
+        )
+
+        if (!response.ok) {
+          console.log(response)
+
+          throw new Error('Failed to fetch data')
+        }
+        console.log('3')
+
+        const data = await response.json()
+        console.log('userrrrrrrrrrrrrr')
+
+        console.log(data.message)
         setElements(data.message)
       } catch (error) {
         console.log('4')
@@ -178,9 +220,12 @@ function Employee() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/services?`, {
-          method: 'GET'
-        })
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/services?`,
+          {
+            method: 'GET'
+          }
+        )
 
         if (!response.ok) {
           console.log(response)
@@ -207,10 +252,19 @@ function Employee() {
   }, [])
 
   useEffect(() => {
+    console.log('elements?.salaireValide')
+
+    console.log(elements?.salaireValide)
+    if (elements?.salaireValide != undefined) {
+      setPaye(elements?.salaireValide[parseInt(month?.number - 1)])
+    }
+  }, [elements, month])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `/api/commission?email=${session.user.email}`,
+          `https://commissions-silamarketingagency.vercel.app/api/commission?email=${session.user.email}`,
           {
             method: 'GET'
           }
@@ -225,9 +279,12 @@ function Employee() {
         const data = await response.json()
         // console.log
         setTousCommission(data.message)
+        console.log('data.message')
+
+        console.log(data.message)
+
         // console.log(filterArrayByMonth(data.message, 1))
-        // setCommission(data.message)
-        setCommission(filterArrayByMonth(data.message, month.number))
+        setCommission(filterArrayByMonth(data.message, month?.number))
       } catch (error) {
         console.log(error)
       }
@@ -235,35 +292,7 @@ function Employee() {
 
     fetchData()
   }, [refresh, month])
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `/api/commission?email=${session.user.email}`,
-          {
-            method: 'GET'
-          }
-        )
 
-        if (!response.ok) {
-          console.log(response)
-
-          throw new Error('Failed to fetch data')
-        }
-
-        const data = await response.json()
-        // console.log
-        setTousCommission(data.message)
-        // console.log(filterArrayByMonth(data.message, 1))
-        // setCommission(data.message)
-        setCommission(filterArrayByMonth(data.message, month.number))
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    fetchData()
-  }, [])
   function transformArray(originalArray) {
     return originalArray.map(obj => {
       return {
@@ -282,8 +311,8 @@ function Employee() {
   function hasAtrip(commissions) {
     let comHasPoits = []
 
-    commissions.forEach(element => {
-      if (element.servicePrix >= 3000) {
+    commissions?.forEach(element => {
+      if (element.servicePrix >= 4000) {
         comHasPoits.push(element)
       }
     })
@@ -396,7 +425,7 @@ function Employee() {
                             try {
                               console.log('1')
                               const response = await fetch(
-                                `/api/commission?id=${ele._id}`,
+                                `https://commissions-silamarketingagency.vercel.app/api/commission?id=${ele._id}`,
                                 {
                                   method: 'DELETE'
                                 }
@@ -439,7 +468,7 @@ function Employee() {
           style={{ width: '75vw' }}
           className='  flex flex-col items-center justify-center px-10 '
         >
-          <div className='mb-8 flex  w-full  items-center justify-between px-10 '>
+          <div className='mb-8 flex  w-full  items-center justify-between  '>
             <h1 className='text-xl text-black'>
               Le salaire de ce mois :{' '}
               <span className='text-green-600'>{elements?.salaire} DA</span>
@@ -451,14 +480,14 @@ function Employee() {
               </span>
             </h1>
           </div>
-          <div className='flex  w-full  items-center justify-between px-10 '>
+          <div className='flex  w-full  items-center justify-between  '>
             <h1 className='text-xl text-black'>
               Le nombre de points de ce mois :{' '}
               <span className='text-green-600'>
                 ({sommePoints(commission)}) - {commissionPoints(commission)} DA
               </span>
             </h1>
-            <h1 className='rounded-md border bg-violet-200 p-4 text-xl text-black shadow-lg'>
+            <h1 className='rounded-md border bg-violet-200 p-4 text-center text-xl text-black shadow-lg'>
               Le total de ce mois :{' '}
               <span className='text-green-600'>
                 {sommeAttribut(commission, 'servicePrix') +
@@ -466,6 +495,15 @@ function Employee() {
                   commissionPoints(commission)}{' '}
                 DA
               </span>
+              {paye ? (
+                <p className='mb-2 me-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'>
+                  payé
+                </p>
+              ) : (
+                <p class='mb-2 me-2 rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'>
+                  nom payé
+                </p>
+              )}
             </h1>
           </div>
           {hasAtrip(tousCommission) ? (

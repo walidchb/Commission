@@ -8,6 +8,10 @@ import { redirect } from 'next/navigation'
 import Select from 'react-select'
 import { format, compareAsc, differenceInMonths } from 'date-fns'
 
+import dotenv from 'dotenv'
+
+// Load environment variables
+dotenv.config()
 import NavBar from '../../components/navbar'
 import { useFormik } from 'formik'
 
@@ -24,7 +28,7 @@ function isValidNumber(value) {
 
 function Rh() {
   const { data: session } = useSession()
-  console.log(session)
+  // console.log(session)
 
   if (!session) {
     redirect('/')
@@ -39,15 +43,54 @@ function Rh() {
   const [showModal, setShowModal] = React.useState(false)
   const [refresh, setRefresh] = useState(false)
   const [user, setUser] = useState({})
+  const [employee, setEmplyee] = useState('')
+
   const [month, setMonth] = useState({})
+  const [paye, setPaye] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/users?email=${employee}`,
+          {
+            method: 'GET'
+          }
+        )
+
+        if (!response.ok) {
+          console.log(response)
+
+          throw new Error('Failed to fetch data')
+        }
+
+        const data = await response.json()
+        if (data?.message?.salaireValide != undefined) {
+          setPaye(data?.message?.salaireValide[parseInt(month?.number - 1)])
+        }
+        //  setUser(data.message)
+      } catch (error) {
+        console.log(error)
+
+        // setError(error)
+      }
+    }
+
+    fetchData()
+    console.log('elements?.salaireValide')
+
+    console.log(user?.salaireValide)
+  }, [refresh, employee, month])
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
         console.log('1')
-        const response = await fetch(`/api/users?email=${session.user.email}`, {
-          method: 'GET'
-        })
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/users?email=${session.user.email}`,
+          {
+            method: 'GET'
+          }
+        )
 
         if (!response.ok) {
           console.log(response)
@@ -60,9 +103,9 @@ function Rh() {
         console.log(data)
         setUser(data.message)
       } catch (error) {
-        console.log('4')
+        console.log(error)
 
-        setError(error)
+        // setError(error)
       }
     }
 
@@ -72,9 +115,12 @@ function Rh() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/users?`, {
-          method: 'GET'
-        })
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/users?`,
+          {
+            method: 'GET'
+          }
+        )
 
         if (!response.ok) {
           console.log(response)
@@ -95,9 +141,12 @@ function Rh() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/services?`, {
-          method: 'GET'
-        })
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/services?`,
+          {
+            method: 'GET'
+          }
+        )
 
         if (!response.ok) {
           console.log(response)
@@ -131,9 +180,12 @@ function Rh() {
   }
   const fetchData = async email => {
     try {
-      const response = await fetch(`/api/commission?email=${email}`, {
-        method: 'GET'
-      })
+      const response = await fetch(
+        `https://commissions-silamarketingagency.vercel.app/api/commission?email=${email}`,
+        {
+          method: 'GET'
+        }
+      )
 
       if (!response.ok) {
         console.log(response)
@@ -147,11 +199,15 @@ function Rh() {
       console.log(error)
     }
   }
+
   useEffect(() => {
+    console.log('userrrrrrrrrrr')
+
+    console.log(employee)
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `/api/commission?email=${session.user.email}`,
+          `https://commissions-silamarketingagency.vercel.app/api/commission?email=${employee}`,
           {
             method: 'GET'
           }
@@ -167,7 +223,9 @@ function Rh() {
         // console.log
         setTousCommission(data.message)
         // console.log(filterArrayByMonth(data.message, 1))
-        // setCommission(data.message)
+        console.log('data.message')
+
+        console.log(data.message)
         setCommission(filterArrayByMonth(data.message, month.number))
       } catch (error) {
         console.log(error)
@@ -176,6 +234,13 @@ function Rh() {
 
     fetchData()
   }, [refresh, month])
+
+  useEffect(() => {
+    console.log('commissions')
+
+    console.log(commissions)
+  }, [commissions])
+
   const [users, setUsers] = useState([])
   const [services, setServices] = useState([])
 
@@ -273,29 +338,44 @@ function Rh() {
 
     onSubmit: async values => {
       try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            posteTrav: values.posteTrav.label,
-            nom: values.nom,
-            prenom: values.prenom,
-            salaire: values.salaire,
-            email: values.email,
-            password: values.password
-          })
-        })
+        console.log(
+          process.env.API_URL +
+            'https://commissions-silamarketingagency.vercel.app/api/register'
+        )
+        const res = await fetch(
+          'https://commissions-silamarketingagency.vercel.apphttps://commissions-silamarketingagency.vercel.app/api/register',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              posteTrav: values.posteTrav.label,
+              nom: values.nom,
+              prenom: values.prenom,
+              salaire: values.salaire,
+              email: values.email,
+              password: values.password
+            })
+          }
+        )
         if (res.status === 400) {
           console.log('This email is already registered')
         }
         if (res.status === 200) {
           console.log('sign up succesuly')
           setRefresh(!refresh)
+          ;(values.posteTrav = ''),
+            (values.nom = ''),
+            (values.prenom = ''),
+            (values.salaire = ''),
+            (values.email = ''),
+            (values.password = '')
           setShowModalEmployees(false)
         }
       } catch (error) {
+        console.log('thisssssssssssssssssss  error ')
+
         console.log(error)
       }
       // alert(JSON.stringify(values, null, 2))
@@ -321,21 +401,26 @@ function Rh() {
 
     onSubmit: async values => {
       try {
-        const res = await fetch('/api/services', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            nom: values.nom,
-            commission: values.commission
-          })
-        })
+        const res = await fetch(
+          'https://commissions-silamarketingagency.vercel.app/api/services',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              nom: values.nom,
+              commission: values.commission
+            })
+          }
+        )
         if (res.status === 400) {
           console.log('This service is already exist')
         }
         if (res.status === 200) {
           setRefresh(!refresh)
+          values.commission = ''
+          values.nom = ''
           console.log('service added up succesuly')
         }
       } catch (error) {
@@ -356,14 +441,14 @@ function Rh() {
 
   function filterArrayByMonth(array, targetMonth) {
     return array.filter(item => {
-      return format(item.createdAt, 'M').toString() === targetMonth
+      return format(item.createdAt, 'M').toString() == targetMonth
     })
   }
 
   function hasAtrip(commissions) {
     let comHasPoits = []
 
-    commissions.forEach(element => {
+    commissions?.forEach(element => {
       if (element.servicePrix >= 3000) {
         comHasPoits.push(element)
       }
@@ -448,7 +533,7 @@ function Rh() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((ele, index) => (
+                {users?.map((ele, index) => (
                   <tr
                     key={ele.id}
                     className='border-b bg-white dark:border-gray-700 dark:bg-gray-800'
@@ -468,7 +553,8 @@ function Rh() {
                     <td className='whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white'>
                       <a
                         onClick={() => {
-                          console.log(ele.email)
+                          setEmplyee(ele.email)
+                          // console.log(ele.email)
                           fetchData(ele.email)
                           setShowModalCommissions(true)
                         }}
@@ -484,7 +570,7 @@ function Rh() {
                             try {
                               console.log('1')
                               const response = await fetch(
-                                `/api/users?email=${ele.email}`,
+                                `https://commissions-silamarketingagency.vercel.app/api/users?email=${ele.email}`,
                                 {
                                   method: 'DELETE'
                                 }
@@ -637,7 +723,7 @@ function Rh() {
                                         try {
                                           console.log('1')
                                           const response = await fetch(
-                                            `/api/services?nom=${ele.nom}`,
+                                            `https://commissions-silamarketingagency.vercel.app/api/services?nom=${ele.nom}`,
                                             {
                                               method: 'DELETE'
                                             }
@@ -937,8 +1023,8 @@ function Rh() {
                   </div>
                 </div>
                 {/*footer*/}
-                <div className='border-blueGray-200 flex items-center justify-between rounded-b border-t border-solid p-6'>
-                  <h3 className='text-l rounded-md border bg-violet-200 p-4 text-black shadow-lg'>
+                <div className=' border-blueGray-200 flex items-center justify-between rounded-b border-t border-solid p-6'>
+                  <h3 className='text-l rounded-md border bg-violet-200 p-4 text-center text-black shadow-lg'>
                     Le total de ce mois :{' '}
                     <span className='text-green-600'>
                       {sommeAttribut(commissions, 'servicePrix') +
@@ -946,11 +1032,65 @@ function Rh() {
                         commissionPoints(commissions)}{' '}
                       DA
                     </span>
+                    {paye ? (
+                      <p className='mb-2 me-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'>
+                        payé
+                      </p>
+                    ) : (
+                      <p
+                        onClick={() => {
+                          const fetchData = async () => {
+                            try {
+                              const response = await fetch(
+                                `https://commissions-silamarketingagency.vercel.app/api/users?email=${employee}&month=${month.number - 1}`,
+                                {
+                                  method: 'PUT'
+                                }
+                              )
+
+                              if (!response.ok) {
+                                console.log(response)
+
+                                throw new Error('Failed to fetch data')
+                              }
+
+                              const data = await response.json()
+                              // console.log
+                              //  setTousCommission(data.message)
+                              // console.log(filterArrayByMonth(data.message, 1))
+                              //  console.log('data.message')
+                              setRefresh(!refresh)
+
+                              console.log(data.message)
+                              //  setCommission(
+                              //    filterArrayByMonth(data.message, month.number)
+                              //  )
+                            } catch (error) {
+                              console.log(error)
+                            }
+                          }
+
+                          fetchData()
+                          console.log('month.number')
+                          console.log(employee)
+                          console.log(month.number)
+                        }}
+                        class='mb-2 me-2 cursor-pointer rounded-lg bg-red-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900'
+                      >
+                        non payé
+                      </p>
+                    )}
                   </h3>{' '}
                   <button
                     className='background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
                     type='button'
                     onClick={() => {
+                      const month = new Date().getMonth() + 1
+
+                      setMonth({
+                        label: months[month - 1].label,
+                        number: month.toString()
+                      })
                       setCommission([])
                       setShowModalCommissions(false)
                     }}

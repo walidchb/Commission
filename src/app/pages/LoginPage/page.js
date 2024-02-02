@@ -16,8 +16,8 @@ function LoginPage({ title }) {
 
   useEffect(() => {
     const url = `${pathname}?${searchParams}`
-    console.log(url)
-    console.log(search)
+    // console.log(url)
+    // console.log(search)
     // You can now use the current URL
     // ...
   }, [pathname, searchParams])

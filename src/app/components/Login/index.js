@@ -12,12 +12,15 @@ function Login({ title, userType }) {
   useEffect(() => {
     console.log('session')
 
-    console.log(session)
+    // console.log(session)
     const fetchData = async () => {
       try {
-        const response = await fetch(`/api/users?email=${session.user.email}`, {
-          method: 'GET'
-        })
+        const response = await fetch(
+          `https://commissions-silamarketingagency.vercel.app/api/users?email=${session.user.email}`,
+          {
+            method: 'GET'
+          }
+        )
 
         if (!response.ok) {
           console.log(response)

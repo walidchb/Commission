@@ -75,6 +75,50 @@ export async function DELETE(request, { params }) {
     })
   }
 }
+
+export async function PUT(request, { params }) {
+  try {
+    await connect()
+    console.log('req')
+    const email = request.nextUrl.searchParams.get('email')
+
+    const monthValide = request.nextUrl.searchParams.get('month')
+
+    const element = await User.findOne({ email: email })
+    let newMonthsVal = element.salaireValide
+    //
+    newMonthsVal[monthValide] = true
+
+    console.log(email)
+    // Deleting the Rider
+    const result = await User.updateOne(
+      { email: email },
+      { $set: { salaireValide: newMonthsVal } }
+    )
+    // returning a message
+    if (result.matchedCount > 0) {
+      return NextResponse.json({
+        success: true,
+        message: 'Array field updated successfully'
+      })
+    } else {
+      return NextResponse.json({
+        success: false,
+        message: 'Document not found'
+      })
+    }
+    // return NextResponse.json({
+    //   message: 'user deleted successfully',
+    //   success: true
+    // })
+  } catch (error) {
+    // returning an error
+    return NextResponse.json({
+      message: new Error(error).message,
+      success: false
+    })
+  }
+}
 // async function updateClient(req, res) {
 //   try {
 //     const session = await getSession({ req: req })

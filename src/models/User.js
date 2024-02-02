@@ -35,6 +35,12 @@ const userSchema = new Schema(
       unique: false,
       required: true
     },
+    salaireValide: {
+      type: Array,
+
+      unique: false,
+      required: false
+    },
     createdAt: { type: Date, default: Date.now }
   },
 

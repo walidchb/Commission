@@ -26,7 +26,7 @@ function NavBar({ title, userName, userType, display }) {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `/api/users?email=${session?.user?.email}`,
+          `https://commissions-silamarketingagency.vercel.app/api/users?email=${session?.user?.email}`,
           {
             method: 'GET'
           }
@@ -38,7 +38,7 @@ function NavBar({ title, userName, userType, display }) {
 
         const data = await response.json()
         console.log('nav bar ')
-        console.log(data.message)
+        // console.log(data.message)
 
         setUser(data.message)
       } catch (error) {

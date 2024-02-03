@@ -16,7 +16,7 @@ export default async function RootLayout({ children }) {
       <head>
         <link rel='icon' href='/images/logoCommission.png' />
       </head>
-      <body className={inter.className}>
+      <body className='min-w-full overflow-x-scroll bg-white'>
         <SessionProvider session={session}>{children}</SessionProvider>
       </body>
     </html>

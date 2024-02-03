@@ -45,12 +45,12 @@ function Login({ title, userType }) {
     fetchData()
   }, [sessionStatus, router])
   return (
-    <div className='myContainer flex items-center justify-center  text-black'>
-      <div className='loginDiv flex w-5/12 flex-col items-center justify-center rounded-2xl p-12'>
+    <div className='flex min-h-screen items-center justify-center  text-black'>
+      <div className='loginDiv flex flex-col  items-center justify-center rounded-2xl px-8 py-12 sm:w-2/5'>
         <h1 className='mb-4 text-4xl'>{title}</h1>
 
         <Formik
-          className='w-5/6'
+          className=''
           initialValues={{ email: '', password: '' }}
           validate={values => {
             const errors = {}
@@ -106,7 +106,7 @@ function Login({ title, userType }) {
             /* and other goodies */
           }) => (
             <form
-              className='flex w-5/6 flex-col items-center justify-center '
+              className='flex flex-col items-center justify-center sm:w-5/6 '
               onSubmit={handleSubmit}
             >
               <div className='w-full'>

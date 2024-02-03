@@ -57,29 +57,31 @@ export default function Home() {
     }
   }
   return (
-    <section className='h-screen bg-white'>
+    <section className='h-screen min-w-full bg-white '>
       <NavBar title={'Gestion des commission'} />
-      <div className='myContainer flex flex-col items-center justify-center '>
-        <h1 className='mb-10 text-4xl text-black'>Je suis : </h1>
-        <div className='flex w-5/6 items-center justify-around  text-black'>
+      <div className='myContainer flex w-full flex-col items-center justify-center'>
+        <h1 className='hidden sm:mb-10 sm:block sm:text-4xl sm:text-black'>
+          Je suis :{' '}
+        </h1>
+        <div className='flex  flex-col items-center justify-between text-black sm:flex sm:flex-row sm:items-center sm:justify-between'>
           <button
             onClick={() => handleClick(1)}
             type='button'
-            className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 p-6 text-4xl font-bold text-white hover:border-violet-500 hover:bg-violet-400'
+            className='mx-4 my-4 rounded border-b-4 border-violet-700 bg-violet-500 p-6 text-4xl font-bold text-white hover:border-violet-500 hover:bg-violet-400'
           >
             Employee
           </button>{' '}
           <button
             onClick={() => handleClick(2)}
             type='button'
-            className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 p-6 text-4xl font-bold text-white hover:border-violet-500 hover:bg-violet-400'
+            className='mx-4 my-4 rounded border-b-4 border-violet-700 bg-violet-500 p-6 text-4xl font-bold text-white hover:border-violet-500 hover:bg-violet-400'
           >
             Recources Humain
           </button>
           <button
             onClick={() => handleClick(3)}
             type='button'
-            className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 p-6 text-4xl font-bold text-white hover:border-violet-500 hover:bg-violet-400'
+            className='mx-4 my-4 rounded border-b-4 border-violet-700 bg-violet-500 p-6 text-4xl font-bold text-white hover:border-violet-500 hover:bg-violet-400'
           >
             Admin
           </button>

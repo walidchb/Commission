@@ -251,10 +251,13 @@ function Rh() {
       label: 'Human Resources Specialist',
       value: 'Human Resources Specialist'
     },
-    { label: 'Photographer', value: 'Photographer' },
-    { label: 'Editor', value: 'Editor' },
-    { label: 'Designer', value: 'Designer' }
-    // Add more job posts as needed
+    { label: 'Commercial', value: 'Commercial' },
+    { label: 'Media buyer', value: 'Media buyer' },
+    { label: 'Developer', value: 'Developer' },
+    { label: 'Video Editor', value: 'Video Editor' },
+    { label: 'Content Creation', value: 'Content Creation' },
+    { label: 'Voix off', value: 'Voix off' },
+    { label: 'Employee', value: 'Employee' }
   ]
   const months = [
     {
@@ -343,7 +346,7 @@ function Rh() {
             'https://commissions-silamarketingagency.vercel.app/api/register'
         )
         const res = await fetch(
-          'https://commissions-silamarketingagency.vercel.apphttps://commissions-silamarketingagency.vercel.app/api/register',
+          'https://commissions-silamarketingagency.vercel.app/api/register',
           {
             method: 'POST',
             headers: {
@@ -497,10 +500,10 @@ function Rh() {
     return sommePoints(tableau) >= 10 ? 5000 : 0
   }
   return (
-    <div className='min-h-screen bg-white text-black'>
+    <div className='min-h-screen   bg-white text-black'>
       <NavBar display={true} userName={'walid'} title={'Recources Humaine'} />
 
-      <div className='mt-16 flex w-full flex-col items-center justify-center'>
+      <div className='mt-16 flex  flex-col items-center justify-center'>
         <div
           style={{ width: '75vw' }}
           className='  flex items-center justify-between px-10 '
@@ -510,10 +513,13 @@ function Rh() {
           <div></div>
         </div>
 
-        <div className=' flex items-center justify-center '>
-          <div className=' relative  mb-6 overflow-x-auto shadow-md sm:rounded-lg'>
-            <table className=' text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
-              <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
+        <div
+          style={{ width: '95%' }}
+          className=' flex  items-center justify-center '
+        >
+          <div className='mb-6 overflow-x-auto   shadow-md sm:rounded-lg'>
+            <table className='w-full text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
+              <thead className=' bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                 <tr>
                   <th scope='col' className='px-6 py-3'>
                     Nom
@@ -532,7 +538,7 @@ function Rh() {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className=''>
                 {users?.map((ele, index) => (
                   <tr
                     key={ele.id}
@@ -607,7 +613,7 @@ function Rh() {
             </table>
           </div>
         </div>
-        <div className=' mb-16 flex w-5/6 items-center justify-around'>
+        <div className='flex  flex-col items-center justify-around sm:mb-16 sm:w-5/6 sm:flex-row'>
           <button
             className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 px-4 py-2 font-bold text-white hover:border-violet-500 hover:bg-violet-400'
             type='submit'
@@ -631,20 +637,23 @@ function Rh() {
 
       {showModalServices ? (
         <div>
-          <div className='fixed inset-0  z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none'>
-            <div className='relative mx-auto my-6 w-auto max-w-3xl'>
+          <div className='fixed inset-0 z-50 flex h-full  items-center justify-center overflow-x-auto   outline-none focus:outline-none'>
+            <div className='relative mx-auto my-6 w-5/6 max-w-3xl'>
               {/*content*/}
-              <div className='relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none'>
+              <div className='relative flex w-full flex-col overflow-x-auto rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none'>
                 {/*header*/}
                 <div className='border-blueGray-200 flex items-start justify-between rounded-t border-b border-solid p-5'>
                   <h3 className='text-3xl font-semibold'>Ajouter un Service</h3>
                 </div>
                 {/*body*/}
                 <div
-                  style={{ padding: 12, height: '50vh' }}
-                  className='flex w-full  items-center justify-center'
+                  // style={{ padding: 12, height: '100vh' }}
+                  className='h-60 overflow-y-auto'
                 >
-                  <div className=' flex w-full flex-col items-center justify-center rounded-2xl p-12'>
+                  <div
+                    style={{ padding: 12, height: '50vh' }}
+                    className='flex h-full w-full flex-col items-center justify-center overflow-y-auto rounded-2xl p-12'
+                  >
                     <form
                       className='flex w-5/6 flex-col items-center justify-center '
                       onSubmit={formikS.handleSubmit}
@@ -683,11 +692,9 @@ function Rh() {
                       </button>
                     </form>
                   </div>
-                  <div
-                    style={{ padding: 12, height: '50vh', overflowY: 'scroll' }}
-                  >
+                  <div style={{ padding: 12, height: '50vh' }}>
                     <div className=' flex items-center justify-center '>
-                      <div className=' relative  mb-6 overflow-x-auto shadow-md sm:rounded-lg'>
+                      <div className='   mb-6 overflow-x-auto shadow-md sm:rounded-lg'>
                         <table className=' text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
                           <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                             <tr>
@@ -765,9 +772,9 @@ function Rh() {
                   </div>
                 </div>
                 {/*footer*/}
-                <div className='border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-6'>
+                <div className='border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-4'>
                   <button
-                    className='background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
+                    className='background-transparent  mr-1 px-6 py-1 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
                     type='button'
                     onClick={() => setShowModalServices(false)}
                   >
@@ -782,7 +789,7 @@ function Rh() {
       ) : null}
       {showModalEmployees ? (
         <>
-          <div className='fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none'>
+          <div className='fixed inset-0 z-50 flex items-center  justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none '>
             <div className='relative mx-auto my-6 w-auto max-w-3xl'>
               {/*content*/}
               <div className='relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none'>
@@ -793,9 +800,9 @@ function Rh() {
                   </h3>
                 </div>
                 {/*body*/}
-                <div className=' flex w-full flex-col items-center justify-center rounded-2xl p-12'>
+                <div className='h-60 w-full overflow-y-auto  rounded-2xl p-6 '>
                   <form
-                    className='flex w-5/6 flex-col items-center justify-center '
+                    className='flex w-full flex-col items-center justify-center '
                     onSubmit={formik.handleSubmit}
                   >
                     <div className='w-full'>
@@ -882,9 +889,9 @@ function Rh() {
                   </form>
                 </div>
                 {/*footer*/}
-                <div className='border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-6'>
+                <div className='border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-4'>
                   <button
-                    className='background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
+                    className='background-transparent mb-1 mr-1 px-6  text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
                     type='button'
                     onClick={() => setShowModalEmployees(false)}
                   >
@@ -899,17 +906,21 @@ function Rh() {
       ) : null}
       {showModalCommissions ? (
         <>
-          <div className='fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden outline-none focus:outline-none'>
-            <div className='relative mx-auto my-6 w-auto max-w-3xl'>
+          <div
+            // style={{ width: '400px' }}
+            className='fixed inset-0 z-50 flex   overflow-y-auto outline-none focus:outline-none'
+          >
+            <div className=' mx-auto my-6 w-auto max-w-3xl'>
               {/*content*/}
-              <div className='relative flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none'>
+              <div className=' flex w-full flex-col rounded-lg border-0 bg-white shadow-lg outline-none focus:outline-none'>
                 {/*header*/}
                 <div className='border-blueGray-200 flex items-start justify-center rounded-t border-b border-solid p-5'>
                   <h3 className='text-3xl font-semibold'>Commissions</h3>
                 </div>
                 {/*body*/}
                 <div
-                  style={{ padding: 12, height: '50vh', overflowY: 'scroll' }}
+                  className='overflow-y-auto'
+                  style={{ padding: 12, height: '50vh' }}
                 >
                   <div className='mb-4  flex items-center justify-center px-10 '>
                     <div>
@@ -931,8 +942,8 @@ function Rh() {
                       </div>
                     </div>
                   </div>
-                  <div className='  flex items-center justify-center '>
-                    <div className=' relative   overflow-x-auto shadow-md sm:rounded-lg'>
+                  <div className='   '>
+                    <div className='    overflow-x-scroll shadow-md sm:rounded-lg'>
                       <table className=' text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
                         <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
                           <tr>
@@ -989,7 +1000,7 @@ function Rh() {
                     </div>
                   </div>
                   <div className='mt-4  flex w-full flex-col items-center justify-around '>
-                    <div className='mb-8 flex  w-full  items-center justify-between  '>
+                    <div className='mb-8 flex w-full  flex-col  items-center justify-between  '>
                       <h3 className='text-l text-black'>
                         Le salaire de ce mois :{' '}
                         <span className='text-green-600'>
@@ -1003,7 +1014,7 @@ function Rh() {
                         </span>
                       </h3>
                     </div>
-                    <div className='flex  w-full  items-center justify-between  '>
+                    <div className='flex w-full flex-col  items-center justify-between  '>
                       <h3 className='text-l text-black'>
                         Le nombre de points de ce mois :{' '}
                         <span className='text-green-600'>

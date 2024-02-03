@@ -342,38 +342,36 @@ function Employee() {
 
       <div className='mt-16 flex w-full flex-col items-center justify-center'>
         <div
-          style={{ width: '75vw' }}
-          className='  flex items-center justify-center px-10 '
+          style={{ width: '95%' }}
+          className='flex flex-col  items-center justify-center sm:flex-row  '
         >
-          <div>
-            <div className='dropdownE'>
-              <button className='dropbtnE '>
-                {month.label} <span>&#x22BD;</span>
-              </button>
-              <div className='dropdown-contentE'>
-                {months.map(month => (
-                  <p
-                    onClick={() => setMonth(month)}
-                    className=' cursor-pointer'
-                  >
-                    {month.label}
-                  </p>
-                  // <a href='#'>{month.label}</a>
-                ))}
-              </div>
-            </div>
-            <button
-              className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 px-4 py-2 font-bold text-white hover:border-violet-500 hover:bg-violet-400'
-              type='submit'
-              onClick={() => setShowModal(true)}
-              // disabled={isSubmitting}
-            >
-              Add Commission
+          <div className='dropdownE'>
+            <button className='dropbtnE '>
+              {month.label} <span>&#x22BD;</span>
             </button>
+            <div className='dropdown-contentE'>
+              {months.map(month => (
+                <p onClick={() => setMonth(month)} className=' cursor-pointer'>
+                  {month.label}
+                </p>
+                // <a href='#'>{month.label}</a>
+              ))}
+            </div>
           </div>
+          <button
+            className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 px-4 py-2 font-bold text-white hover:border-violet-500 hover:bg-violet-400'
+            type='submit'
+            onClick={() => setShowModal(true)}
+            // disabled={isSubmitting}
+          >
+            Add Commission
+          </button>
         </div>
 
-        <div className='  flex items-center justify-center '>
+        <div
+          style={{ width: '95%' }}
+          className='  flex items-center justify-center '
+        >
           <div className=' relative  mb-8 overflow-x-auto shadow-md sm:rounded-lg'>
             <table className=' text-left text-sm text-gray-500 rtl:text-right dark:text-gray-400'>
               <thead className='bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400'>
@@ -465,10 +463,10 @@ function Employee() {
         </div>
 
         <div
-          style={{ width: '75vw' }}
+          style={{ width: '95%' }}
           className='  flex flex-col items-center justify-center px-10 '
         >
-          <div className='mb-8 flex  w-full  items-center justify-between  '>
+          <div className='mb-8 flex w-full  flex-col  items-center justify-between  '>
             <h1 className='text-xl text-black'>
               Le salaire de ce mois :{' '}
               <span className='text-green-600'>{elements?.salaire} DA</span>
@@ -480,8 +478,8 @@ function Employee() {
               </span>
             </h1>
           </div>
-          <div className='flex  w-full  items-center justify-between  '>
-            <h1 className='text-xl text-black'>
+          <div className=' flex w-full  flex-col  items-center justify-between  '>
+            <h1 className='mb-8 text-xl text-black'>
               Le nombre de points de ce mois :{' '}
               <span className='text-green-600'>
                 ({sommePoints(commission)}) - {commissionPoints(commission)} DA
@@ -528,9 +526,9 @@ function Employee() {
                   </h3>
                 </div>
                 {/*body*/}
-                <div className=' flex w-full flex-col items-center justify-center rounded-2xl p-12'>
+                <div className=' h-60 w-full  overflow-y-auto rounded-2xl p-12 '>
                   <form
-                    className='flex w-5/6 flex-col items-center justify-center '
+                    className='flex w-full flex-col items-center justify-center '
                     onSubmit={formik.handleSubmit}
                   >
                     <div className='w-full'>
@@ -585,9 +583,9 @@ function Employee() {
                   </form>
                 </div>
                 {/*footer*/}
-                <div className='border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-6'>
+                <div className='border-blueGray-200 flex items-center justify-end rounded-b border-t border-solid p-4'>
                   <button
-                    className='background-transparent mb-1 mr-1 px-6 py-2 text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
+                    className='background-transparent mb-1 mr-1 px-6  text-sm font-bold uppercase text-red-500 outline-none transition-all duration-150 ease-linear focus:outline-none'
                     type='button'
                     onClick={() => setShowModal(false)}
                   >

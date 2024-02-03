@@ -28,6 +28,7 @@ body {
 
 .myContainer {
   height: 88vh;
+  width: "full";
 }
 
 @layer utilities {

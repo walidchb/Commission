@@ -50,15 +50,18 @@ function NavBar({ title, userName, userType, display }) {
   }, [])
 
   return (
-    <div style={styles.container} className=' overflow-visible  bg-white '>
+    <div
+      style={styles.container}
+      className=' min-w-full  overflow-visible bg-white'
+    >
       <nav
-        className='flex items-center justify-between px-10 lg:px-8'
+        className='flex min-w-full items-center justify-between px-10 lg:px-8'
         aria-label='Global'
       >
         <div className=' cursor-pointer '>
           <Logo textColor='white' />
         </div>
-        <h1 className='text-center text-4xl text-black'>
+        <h1 className='text-m hidden text-center text-black sm:block sm:text-4xl'>
           {user?.posteTrav == 'Ceo' ? 'Admin' : title}
         </h1>
 

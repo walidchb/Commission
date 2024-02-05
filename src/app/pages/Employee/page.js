@@ -213,6 +213,7 @@ function Employee() {
 
     fetchData()
   }, [refresh])
+  const [salaireAfterFrais, setSalaireAfterFrais] = useState(0)
 
   const [services, setServices] = useState([])
   const [month, setMonth] = useState({})
@@ -257,6 +258,11 @@ function Employee() {
     console.log(elements?.salaireValide)
     if (elements?.salaireValide != undefined) {
       setPaye(elements?.salaireValide[parseInt(month?.number - 1)])
+    }
+    if (elements?.salaireAfterFrais != undefined) {
+      setSalaireAfterFrais(
+        elements?.salaireAfterFrais[parseInt(month?.number - 1)]
+      )
     }
   }, [elements, month])
 
@@ -471,6 +477,12 @@ function Employee() {
               Le salaire de ce mois :{' '}
               <span className='text-green-600'>{elements?.salaire} DA</span>
             </h1>
+            <h3 className='text-xl text-black'>
+              Les frais de ce mois:{' '}
+              <span className='text-red-600'>
+                {elements?.salaire - salaireAfterFrais} DA
+              </span>
+            </h3>
             <h1 className='text-xl text-black'>
               Le total de mes Commission dans ce mois :{' '}
               <span className='text-green-600'>
@@ -489,7 +501,7 @@ function Employee() {
               Le total de ce mois :{' '}
               <span className='text-green-600'>
                 {sommeAttribut(commission, 'servicePrix') +
-                  elements?.salaire +
+                  salaireAfterFrais +
                   commissionPoints(commission)}{' '}
                 DA
               </span>

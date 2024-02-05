@@ -44,9 +44,11 @@ function Rh() {
   const [refresh, setRefresh] = useState(false)
   const [user, setUser] = useState({})
   const [employee, setEmplyee] = useState('')
+  const [employeeObject, setEmplyeeObject] = useState({})
 
   const [month, setMonth] = useState({})
   const [paye, setPaye] = useState(false)
+  const [salaireAfterFrais, setSalaireAfterFrais] = useState(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -65,6 +67,12 @@ function Rh() {
         }
 
         const data = await response.json()
+        setEmplyeeObject(data?.message)
+        if (data?.message?.salaireAfterFrais != undefined) {
+          setSalaireAfterFrais(
+            data?.message?.salaireAfterFrais[parseInt(month?.number - 1)]
+          )
+        }
         if (data?.message?.salaireValide != undefined) {
           setPaye(data?.message?.salaireValide[parseInt(month?.number - 1)])
         }
@@ -433,6 +441,53 @@ function Rh() {
     }
   })
 
+  const formikF = useFormik({
+    initialValues: {
+      frais: ''
+    },
+
+    validate: values => {
+      const errors = {}
+
+      if (!values.frais || values.frais <= 0) {
+        errors.frais = 'valeur non acceptée'
+      }
+
+      return errors
+    },
+
+    onSubmit: async values => {
+      const fetchData = async () => {
+        try {
+          const response = await fetch(
+            `https://commissions-silamarketingagency.vercel.app/api/users?email=${employee}&month=${month.number - 1}&frais=${values.frais}`,
+            {
+              method: 'PUT'
+            }
+          )
+
+          if (!response.ok) {
+            console.log(response)
+
+            throw new Error('Failed to fetch data')
+          }
+
+          const data = await response.json()
+
+          setRefresh(!refresh)
+
+          console.log(data.message)
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      fetchData()
+      values.frais = ''
+      // alert(JSON.stringify(values, null, 2))
+    }
+  })
+
   function transformArray(originalArray) {
     return originalArray.map(obj => {
       return {
@@ -498,6 +553,11 @@ function Rh() {
   }
   function commissionPoints(tableau) {
     return sommePoints(tableau) >= 10 ? 5000 : 0
+  }
+
+  function iliminateUndefind(value) {
+    if (value) return 0
+    return value
   }
   return (
     <div className='min-h-screen   bg-white text-black'>
@@ -1004,7 +1064,13 @@ function Rh() {
                       <h3 className='text-l text-black'>
                         Le salaire de ce mois :{' '}
                         <span className='text-green-600'>
-                          {user?.salaire} DA
+                          {employeeObject?.salaire} DA
+                        </span>
+                      </h3>
+                      <h3 className='text-l text-black'>
+                        Les frais de ce mois:{' '}
+                        <span className='text-red-600'>
+                          {employeeObject?.salaire - salaireAfterFrais} DA
                         </span>
                       </h3>
                       <h3 className='text-l text-black'>
@@ -1023,6 +1089,35 @@ function Rh() {
                         </span>
                       </h3>
                     </div>
+                    <div className='h-60 w-full overflow-y-auto  rounded-2xl p-6 '>
+                      <form
+                        className='flex w-full flex-col items-center justify-center '
+                        onSubmit={formikF.handleSubmit}
+                      >
+                        <div className='w-full'>
+                          <p className='text-xl'>Frais :</p>
+                          <input
+                            className='input mb-2 h-8 w-full rounded-2xl px-4'
+                            type='number'
+                            name='frais'
+                            onChange={formikF.handleChange}
+                            value={formikF.values.frais}
+                          />
+                        </div>
+
+                        <p className='mb-4 text-red-500'>
+                          {' '}
+                          {formikF.errors.frais && formikF.touched.frais}
+                        </p>
+
+                        <button
+                          className='my-4 rounded border-b-4 border-violet-700 bg-violet-500 px-4 py-2 font-bold text-white hover:border-violet-500 hover:bg-violet-400'
+                          type='submit'
+                        >
+                          Ajouter un frais
+                        </button>
+                      </form>
+                    </div>
                     {hasAtrip(tousCommission) ? (
                       <div class='my-8 w-full rounded-lg bg-blue-500 p-6 text-center text-white shadow-lg'>
                         <h2 class='mb-4 text-2xl font-bold'>
@@ -1039,12 +1134,46 @@ function Rh() {
                     Le total de ce mois :{' '}
                     <span className='text-green-600'>
                       {sommeAttribut(commissions, 'servicePrix') +
-                        user?.salaire +
-                        commissionPoints(commissions)}{' '}
+                        // user?.salaire +
+                        commissionPoints(commissions) +
+                        salaireAfterFrais}{' '}
                       DA
                     </span>
                     {paye ? (
-                      <p className='mb-2 me-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'>
+                      <p
+                        onClick={() => {
+                          const fetchData = async () => {
+                            try {
+                              const response = await fetch(
+                                `https://commissions-silamarketingagency.vercel.app/api/users?email=${employee}&month=${month.number - 1}`,
+                                {
+                                  method: 'PUT'
+                                }
+                              )
+
+                              if (!response.ok) {
+                                console.log(response)
+
+                                throw new Error('Failed to fetch data')
+                              }
+
+                              const data = await response.json()
+
+                              setRefresh(!refresh)
+
+                              console.log(data.message)
+                            } catch (error) {
+                              console.log(error)
+                            }
+                          }
+
+                          fetchData()
+                          console.log('month.number')
+                          console.log(employee)
+                          console.log(month.number)
+                        }}
+                        className='mb-2 me-2 cursor-pointer rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800'
+                      >
                         payé
                       </p>
                     ) : (

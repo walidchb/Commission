@@ -37,6 +37,20 @@ export const POST = async request => {
       false,
       false,
       false
+    ],
+    salaireAfterFrais: [
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire,
+      salaire
     ]
   })
 

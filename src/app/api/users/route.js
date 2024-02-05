@@ -83,34 +83,59 @@ export async function PUT(request, { params }) {
     const email = request.nextUrl.searchParams.get('email')
 
     const monthValide = request.nextUrl.searchParams.get('month')
+    const frais = request.nextUrl.searchParams.get('frais')
 
-    const element = await User.findOne({ email: email })
-    let newMonthsVal = element.salaireValide
-    //
-    newMonthsVal[monthValide] = true
+    if (frais) {
+      console.log('dkhlt hna ')
 
-    console.log(email)
-    // Deleting the Rider
-    const result = await User.updateOne(
-      { email: email },
-      { $set: { salaireValide: newMonthsVal } }
-    )
-    // returning a message
-    if (result.matchedCount > 0) {
-      return NextResponse.json({
-        success: true,
-        message: 'Array field updated successfully'
-      })
+      const element = await User.findOne({ email: email })
+      let newsalaireAfterfrais = element.salaireAfterFrais
+      console.log(newsalaireAfterfrais)
+
+      newsalaireAfterfrais[monthValide] =
+        newsalaireAfterfrais[monthValide] - frais
+
+      console.log(newsalaireAfterfrais)
+      const result = await User.updateOne(
+        { email: email },
+        { $set: { salaireAfterFrais: newsalaireAfterfrais } }
+      )
+      // returning a message
+      if (result.matchedCount > 0) {
+        return NextResponse.json({
+          success: true,
+          message: 'Array field updated successfully'
+        })
+      } else {
+        return NextResponse.json({
+          success: false,
+          message: 'Document not found'
+        })
+      }
     } else {
-      return NextResponse.json({
-        success: false,
-        message: 'Document not found'
-      })
+      const element = await User.findOne({ email: email })
+      let newMonthsVal = element.salaireValide
+
+      newMonthsVal[monthValide] = !newMonthsVal[monthValide]
+
+      console.log(email)
+      const result = await User.updateOne(
+        { email: email },
+        { $set: { salaireValide: newMonthsVal } }
+      )
+      // returning a message
+      if (result.matchedCount > 0) {
+        return NextResponse.json({
+          success: true,
+          message: 'Array field updated successfully'
+        })
+      } else {
+        return NextResponse.json({
+          success: false,
+          message: 'Document not found'
+        })
+      }
     }
-    // return NextResponse.json({
-    //   message: 'user deleted successfully',
-    //   success: true
-    // })
   } catch (error) {
     // returning an error
     return NextResponse.json({

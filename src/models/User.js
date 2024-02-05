@@ -41,6 +41,12 @@ const userSchema = new Schema(
       unique: false,
       required: false
     },
+    salaireAfterFrais: {
+      type: Array,
+
+      unique: false,
+      required: false
+    },
     createdAt: { type: Date, default: Date.now }
   },
 
